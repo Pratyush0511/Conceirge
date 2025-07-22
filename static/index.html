@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>AI Chieftain – Hotel Concierge</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: "Segoe UI", sans-serif;
+      background-color: #f5f5f5;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .container {
+      width: 90%;
+      max-width: 500px;
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .header {
+      background: #3f51b5;
+      color: white;
+      padding: 20px;
+      text-align: center;
+    }
+
+    #chatbox {
+      padding: 20px;
+      height: 400px;
+      overflow-y: auto;
+      background: #fafafa;
+    }
+
+    .message {
+      margin: 10px 0;
+      padding: 10px 15px;
+      border-radius: 10px;
+      max-width: 80%;
+      line-height: 1.5;
+      white-space: pre-wrap;
+    }
+
+    .user {
+      background: #e3f2fd;
+      align-self: flex-end;
+      text-align: right;
+    }
+
+    .bot {
+      background: #e8f5e9;
+      align-self: flex-start;
+      text-align: left;
+    }
+
+    .input-area {
+      display: flex;
+      border-top: 1px solid #ddd;
+      padding: 10px;
+      gap: 10px;
+    }
+
+    .input-area input[type="text"] {
+      flex: 1;
+      padding: 10px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      font-size: 16px;
+    }
+
+    .input-area button {
+      background: #3f51b5;
+      color: white;
+      border: none;
+      padding: 10px 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: 0.2s ease;
+    }
+
+    .input-area button:hover {
+      background: #303f9f;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+
+    <a href="/static/admin.html" target="_blank" style="position: absolute; top: 20px; right: 20px; padding: 10px 15px; background-color: #007bff; color: white; text-decoration: none; border-radius: 5px;">Chat History</a>
+
+
+    <div class="header">
+      <h2>🛎️ AI Chieftain – Concierge</h2>
+      <p style="font-size: 14px; opacity: 0.9;">Ask about hotel services, bookings, or local attractions</p>
+    </div>
+
+    <div id="chatbox"></div>
+
+    <div class="input-area">
+      <input type="text" id="message" placeholder="Type your question..." />
+      <button onclick="sendMessage()">Send</button>
+      <button onclick="startListening()">🎤</button>
+    </div>
+  </div>
+
+  <script>
+    const msgInput = document.getElementById("message");
+
+    // Listen for Enter key
+    msgInput.addEventListener("keydown", function (event) {
+      if (event.key === "Enter") {
+        event.preventDefault();  // Prevent form submission or new line
+        sendMessage();
+      }
+    });
+
+    async function sendMessage() {
+      const msg = msgInput.value.trim();
+      if (!msg) return;
+
+      appendMessage(msg, "user");
+      msgInput.value = "";
+
+      const response = await fetch("http://localhost:8000/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: msg }),
+      });
+
+      const data = await response.json();
+      appendMessage(data.response, "bot");
+    }
+
+    function appendMessage(text, role) {
+      const chatbox = document.getElementById("chatbox");
+      const messageDiv = document.createElement("div");
+      messageDiv.className = `message ${role}`;
+      messageDiv.textContent = text;
+      chatbox.appendChild(messageDiv);
+      chatbox.scrollTop = chatbox.scrollHeight;
+    }
+
+    function startListening() {
+      const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+      recognition.lang = "en-US";
+      recognition.start();
+      recognition.onresult = function(event) {
+        msgInput.value = event.results[0][0].transcript;
+        sendMessage();
+      };
+    }
+  </script>
+
+</body>
+</html>
