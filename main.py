@@ -57,8 +57,7 @@ async def chat(request: ChatRequest, req: Request):
     try:
         username = req.query_params.get("username")
 
-        chat = model.start_chat(history=[])
-        response = chat.send_message(
+        response = model.generate_content(
             f"""
             You are a polite, professional hotel concierge for The Grand Horizon Hotel, a 5-star luxury hotel located in Mumbai.
             Help guests with check-in/check-out info, restaurant hours, spa bookings, transport arrangements, sightseeing suggestions, and more.
@@ -69,8 +68,7 @@ async def chat(request: ChatRequest, req: Request):
             """
         )
 
-        bot_response = response.text
-        return {"response": bot_response}
+        return {"response": response.text}
 
     except Exception as e:
         import traceback
