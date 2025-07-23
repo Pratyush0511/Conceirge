@@ -28,10 +28,10 @@ app.include_router(auth_router)
 
 genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
 model = genai.GenerativeModel("gemini-pro")
-uri = os.getenv("MONGO_URI")
-client_db = MongoClient(uri)
-db = client_db[os.getenv("MONGO_DB")]
-collection = db[os.getenv("MONGO_COLLECTION")]
+# uri = os.getenv("MONGO_URI")
+# client_db = MongoClient(uri)
+# db = client_db[os.getenv("MONGO_DB")]
+# collection = db[os.getenv("MONGO_COLLECTION")]
 
 print("MONGO_URI =", os.getenv("MONGO_URI"))
 print("MONGO_DB =", os.getenv("MONGO_DB"))
@@ -69,12 +69,12 @@ async def chat(request: ChatRequest, req: Request):
 
         bot_response = response.text
 
-        collection.insert_one({
-            "username": username,
-            "user_message": request.message,
-            "bot_response": bot_response,
-            "timestamp": datetime.utcnow()
-        })
+        # collection.insert_one({
+        #     "username": username,
+        #     "user_message": request.message,
+        #     "bot_response": bot_response,
+        #     "timestamp": datetime.utcnow()
+        # })
 
         return {"response": bot_response}
 
