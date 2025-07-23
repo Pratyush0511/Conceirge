@@ -32,7 +32,8 @@ genai.configure(
     api_key=GEMINI_API_KEY        
 )
 
-model = genai.GenerativeModel("gemini-pro")
+model = genai.GenerativeModel("models/gemini-pro")
+
 # uri = os.getenv("MONGO_URI")
 # client_db = MongoClient(uri)
 # db = client_db[os.getenv("MONGO_DB")]
