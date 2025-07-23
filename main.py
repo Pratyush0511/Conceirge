@@ -22,8 +22,6 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 
 
 @app.get("/", response_class=FileResponse)
-def root():
-    return {"message": "AI Hotel Concierge is running."}
 async def serve_home():
     return FileResponse("static/index.html")
 
