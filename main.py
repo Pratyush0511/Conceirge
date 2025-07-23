@@ -82,21 +82,21 @@ async def chat(request: ChatRequest, req: Request):
         raise HTTPException(status_code=500, detail=str(e))
 
     
-@app.get("/admin/chats")
-def get_chat_history():
-    try:
-        print("Trying to fetch chat history from MongoDB...")
-        chats = list(collection.find({}, {"_id": 0}))
+# @app.get("/admin/chats")
+# def get_chat_history():
+#     try:
+#         print("Trying to fetch chat history from MongoDB...")
+#         chats = list(collection.find({}, {"_id": 0}))
 
-        for chat in chats:
-            if "timestamp" in chat:
-                chat["timestamp"] = chat["timestamp"].isoformat()
+#         for chat in chats:
+#             if "timestamp" in chat:
+#                 chat["timestamp"] = chat["timestamp"].isoformat()
 
-        print("Fetched chats:", chats)
-        return JSONResponse(content={"chats": chats})
-    except Exception as e:
-        import traceback
-        traceback.print_exc()
-        return JSONResponse(status_code=500, content={"error": str(e)})
+#         print("Fetched chats:", chats)
+#         return JSONResponse(content={"chats": chats})
+#     except Exception as e:
+#         import traceback
+#         traceback.print_exc()
+#         return JSONResponse(status_code=500, content={"error": str(e)})
 
 
