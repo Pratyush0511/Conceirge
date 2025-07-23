@@ -70,18 +70,13 @@ async def chat(request: ChatRequest, req: Request):
         )
 
         bot_response = response.text
-
-        # collection.insert_one({
-        #     "username": username,
-        #     "user_message": request.message,
-        #     "bot_response": bot_response,
-        #     "timestamp": datetime.utcnow()
-        # })
-
         return {"response": bot_response}
 
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        import traceback
+        traceback.print_exc()
+        return JSONResponse(status_code=500, content={"error": str(e)})
+
 
     
 # @app.get("/admin/chats")
@@ -101,4 +96,11 @@ async def chat(request: ChatRequest, req: Request):
 #         traceback.print_exc()
 #         return JSONResponse(status_code=500, content={"error": str(e)})
 
+
+# collection.insert_one({
+        #     "username": username,
+        #     "user_message": request.message,
+        #     "bot_response": bot_response,
+        #     "timestamp": datetime.utcnow()
+        # })
 
