@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: concierge-bot
+    env: python
+    plan: free
+    buildCommand: ""
+    startCommand: uvicorn main:app --host 0.0.0.0 --port 10000
+    envVars:
+      - key: GROQ_API_KEY
+        sync: false
+      - key: MONGO_URI
+        sync: false
+      - key: MONGO_DB
+        sync: false
+      - key: MONGO_COLLECTION
+        sync: false
