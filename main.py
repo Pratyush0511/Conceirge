@@ -2,7 +2,7 @@ import os
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
-from groq import Groq
+import google.generativeai as genai
 from dotenv import load_dotenv
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
@@ -26,7 +26,8 @@ async def serve_home():
 app.include_router(auth_router)
 
 
-client = Groq(api_key=os.getenv("GROQ_API_KEY"))
+genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
+model = genai.GenerativeModel("gemini-pro")
 uri = os.getenv("MONGO_URI")
 client_db = MongoClient(uri)
 db = client_db[os.getenv("MONGO_DB")]
@@ -52,33 +53,34 @@ class ChatRequest(BaseModel):
 @app.post("/chat")
 async def chat(request: ChatRequest, req: Request):
     try:
-        username = req.query_params.get("username")  
+        username = req.query_params.get("username")
 
-        completion = client.chat.completions.create(
-            model="llama3-70b-8192",
-            messages=[
-                {"role": "system", 
-                 "content": "You are a polite, professional hotel concierge for **The Grand Horizon Hotel**, "
-                            "a 5-star luxury hotel located in Mumbai. Help guests with check-in/check-out info, "
-                            "restaurant hours, spa bookings, transport arrangements, sightseeing suggestions, and more. "
-                            "The hotel offers: Deluxe Rooms, Presidential Suites, Rooftop Dining, 24x7 Room Service, "
-                            "Free Wi-Fi, Airport Pickup, and a Wellness Spa. Check-in is 2 PM, check-out is 11 AM. "
-                            "Address: Marine Drive, Mumbai, Maharashtra. Phone: +91-9876543210."},  
-                {"role": "user", "content": request.message},
-            ],
-            temperature=0.7,
+        chat = model.start_chat(history=[])
+        response = chat.send_message(
+            f"""
+            You are a polite, professional hotel concierge for The Grand Horizon Hotel, a 5-star luxury hotel located in Mumbai.
+            Help guests with check-in/check-out info, restaurant hours, spa bookings, transport arrangements, sightseeing suggestions, and more.
+            The hotel offers: Deluxe Rooms, Presidential Suites, Rooftop Dining, 24x7 Room Service, Free Wi-Fi, Airport Pickup, and a Wellness Spa.
+            Check-in is 2 PM, check-out is 11 AM. Address: Marine Drive, Mumbai, Maharashtra. Phone: +91-9876543210.
+
+            Guest says: {request.message}
+            """
         )
+
+        bot_response = response.text
 
         collection.insert_one({
             "username": username,
             "user_message": request.message,
-            "bot_response": completion.choices[0].message.content,
+            "bot_response": bot_response,
             "timestamp": datetime.utcnow()
         })
 
-        return {"response": completion.choices[0].message.content}
+        return {"response": bot_response}
+
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
     
 @app.get("/admin/chats")
 def get_chat_history():
