@@ -12,10 +12,18 @@
       margin: 0;
       font-family: "Segoe UI", sans-serif;
       background-color: #f5f5f5;
+      height: 100vh;
       display: flex;
       justify-content: center;
       align-items: center;
-      height: 100vh;
+    }
+
+    .page-wrapper {
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      gap: 30px;
+      padding: 40px;
     }
 
     .container {
@@ -93,29 +101,89 @@
     .input-area button:hover {
       background: #303f9f;
     }
+
+    .floating-buttons {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      z-index: 999; 
+    }
+
+    .btn {
+      background-color: #2e3a59;
+      color: white;
+      padding: 10px 16px;
+      border: none;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: bold;
+      transition: background 0.3s ease;
+      text-align: center;
+      width: 120px;
+    }
+
+    .btn:hover {
+      background-color: #1c2541;
+    }
+
+    .login-btn {
+      background-color: #4caf50;
+    }
+
+    .login-btn:hover {
+      background-color: #388e3c;
+    }
+
   </style>
 </head>
 <body>
-  <div class="container">
+  <div class="floating-buttons">
+    <a href="/login" class="btn login-btn">Login</a>
+    <a href="/static/admin.html" target="_blank" class="btn">Chat History</a>
+  </div>
 
-    <a href="/static/admin.html" target="_blank" style="position: absolute; top: 20px; right: 20px; padding: 10px 15px; background-color: #007bff; color: white; text-decoration: none; border-radius: 5px;">Chat History</a>
+  <div class="page-wrapper">
+    <div class="container">
+      <div class="header">
+        <h2>🛎️ AI Chieftain – Concierge</h2>
+        <h1>Welcome to The Grand Horizon Hotel</h1>
+        <p id="welcome-message"></p>
+        <p style="font-size: 14px; opacity: 0.9;">Ask about hotel services, bookings, or local attractions</p>
+      </div>
 
+      <div id="chatbox"></div>
 
-    <div class="header">
-      <h2>🛎️ AI Chieftain – Concierge</h2>
-      <p style="font-size: 14px; opacity: 0.9;">Ask about hotel services, bookings, or local attractions</p>
-    </div>
-
-    <div id="chatbox"></div>
-
-    <div class="input-area">
-      <input type="text" id="message" placeholder="Type your question..." />
-      <button onclick="sendMessage()">Send</button>
-      <button onclick="startListening()">🎤</button>
+      <div class="input-area">
+        <input type="text" id="message" placeholder="Type your question..." />
+        <button onclick="sendMessage()">Send</button>
+        <button onclick="startListening()">🎤</button>
+      </div>
     </div>
   </div>
 
+
+
   <script>
+
+    const params = new URLSearchParams(window.location.search);
+    const queryUsername = params.get('username');
+
+    if (queryUsername) {
+      localStorage.setItem("username", queryUsername);
+    }
+
+    const username = localStorage.getItem("username");
+    
+
+    if (username) {
+      document.getElementById('welcome-message').innerText = `Hello, ${username}!`;
+    } else {
+      document.getElementById('welcome-message').innerText = `Hello, Guest!`;
+    }
+
     const msgInput = document.getElementById("message");
 
     // Listen for Enter key
