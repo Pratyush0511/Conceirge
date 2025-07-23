@@ -36,6 +36,8 @@ model = genai.GenerativeModel("gemini-pro")
 print("MONGO_URI =", os.getenv("MONGO_URI"))
 print("MONGO_DB =", os.getenv("MONGO_DB"))
 print("MONGO_COLLECTION =", os.getenv("MONGO_COLLECTION"))
+print("Gemini Key:", os.getenv("GEMINI_API_KEY"))
+
 
 
 app.add_middleware(
