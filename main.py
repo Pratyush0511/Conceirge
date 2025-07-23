@@ -27,6 +27,13 @@ app.include_router(auth_router)
 
 
 genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
+
+genai.configure(
+    api_key=GEMINI_API_KEY,
+    transport='rest',         
+    api_version='v1'          
+)
+
 model = genai.GenerativeModel("gemini-pro")
 # uri = os.getenv("MONGO_URI")
 # client_db = MongoClient(uri)
