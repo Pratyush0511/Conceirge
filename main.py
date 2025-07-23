@@ -29,9 +29,7 @@ app.include_router(auth_router)
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 
 genai.configure(
-    api_key=GEMINI_API_KEY,
-    transport='rest',         
-    api_version='v1'          
+    api_key=GEMINI_API_KEY        
 )
 
 model = genai.GenerativeModel("gemini-pro")
