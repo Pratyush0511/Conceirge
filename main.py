@@ -52,7 +52,9 @@ class ChatRequest(BaseModel):
 @app.post("/chat")
 async def chat(request: ChatRequest, req: Request):
     try:
-        username = req.query_params.get("username")  
+        print("Incoming request:", request)
+        username = req.query_params.get("username")
+        print("Username:", username)
 
         completion = client.chat.completions.create(
             model="llama3-70b-8192",
@@ -63,11 +65,14 @@ async def chat(request: ChatRequest, req: Request):
                             "restaurant hours, spa bookings, transport arrangements, sightseeing suggestions, and more. "
                             "The hotel offers: Deluxe Rooms, Presidential Suites, Rooftop Dining, 24x7 Room Service, "
                             "Free Wi-Fi, Airport Pickup, and a Wellness Spa. Check-in is 2 PM, check-out is 11 AM. "
-                            "Address: Marine Drive, Mumbai, Maharashtra. Phone: +91-9876543210."},  
+                            "Address: Marine Drive, Mumbai, Maharashtra. Phone: +91-9876543210."
+                },
                 {"role": "user", "content": request.message},
             ],
             temperature=0.7,
         )
+
+        print("Groq Response:", completion.choices[0].message.content)
 
         collection.insert_one({
             "username": username,
@@ -77,8 +82,11 @@ async def chat(request: ChatRequest, req: Request):
         })
 
         return {"response": completion.choices[0].message.content}
+
     except Exception as e:
+        print("Error:", e)
         raise HTTPException(status_code=500, detail=str(e))
+
     
 @app.get("/admin/chats")
 def get_chat_history():
