@@ -78,7 +78,7 @@ async def chat(request: ChatRequest, req: Request):
         username = req.query_params.get("username")
         print("Username:", username)
 
-        completion = client.chat.completions.create(
+        completion = groq_client.chat.completions.create(
             model="llama3-70b-8192",
             messages=[
                 {"role": "system", 
